@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /daw_servidor/forms/
+
+# Si el archivo o directorio físico NO existe
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirigir todo a index.php
+RewriteRule ^(.*)$ index.php [QSA,L]

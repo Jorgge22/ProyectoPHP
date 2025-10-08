@@ -1,0 +1,225 @@
+/* Reset / box-sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Page */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  color: #222;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 14px 28px;
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+header h1::before {
+  content: "📁";
+}
+
+header button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+header button:hover { background-color: #0056b3; }
+
+/* Main container */
+main {
+  max-width: 1100px;
+  margin: 28px auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Title inside main */
+h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Form grid: 4 columns desktop -> 2 -> 1 on small screens */
+form.filtros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* Campo (field) */
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 14px;
+}
+
+input[type="text"],
+select,
+textarea {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  width: 100%;
+  background: #fff;
+}
+
+/* focus */
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.06);
+}
+
+/* Multiple select height */
+select[multiple] {
+  min-height: 90px;
+}
+
+/* Checkboxes list */
+.campo .checkbox-list,
+.campo > div input[type="checkbox"] + label {
+  /* keep basic */
+}
+
+.campo .checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.campo .checkbox-list .checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f7fa;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #eceff4;
+  font-size: 13px;
+}
+
+/* Actions row spanning full width of grid */
+.acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.acciones a {
+  color: #007bff;
+  text-decoration: none;
+}
+.acciones a:hover { text-decoration: underline; }
+
+/* Submit button */
+input[type="submit"],
+button[type="submit"] {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+/* Project card */
+.proyecto {
+  border: 1px solid #e6e6e6;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.proyecto strong {
+  font-size: 16px;
+}
+
+.proyecto small em {
+  color: #666;
+  display: block;
+  margin-top: 4px;
+}
+
+.proyecto p {
+  margin: 8px 0;
+  color: #333;
+  line-height: 1.4;
+}
+
+.proyecto .tecnologias {
+  font-size: 13px;
+  color: #444;
+}
+
+/* Responsive: tablets */
+@media (max-width: 900px) {
+  form.filtros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Responsive: phones */
+@media (max-width: 520px) {
+  form.filtros {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    padding: 12px 14px;
+  }
+
+  main {
+    margin: 16px;
+    padding: 16px;
+  }
+}
