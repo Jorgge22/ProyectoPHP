@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /daw_servidor/forms/
+RewriteBase /estructura_base_mvc/forms/
 
 # Si el archivo o directorio físico NO existe
 RewriteCond %{REQUEST_FILENAME} !-f

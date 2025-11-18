@@ -1,124 +1,110 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php
+session_start();
+
+// Comprobamos si hay idioma en la cookie, si no, usamos español
+if (isset($_COOKIE['lengua'])) {
+    $lengua = $_COOKIE['lengua'];
+} else {
+    $lengua = 'es';
+}
+
+// Traducciones básicas
+if ($lengua === 'en') {
+    $T = [
+        'login_title' => 'Login',
+        'user' => 'User',
+        'password' => 'Password',
+        'language' => 'Language',
+        'login' => 'Login',
+        'invalid_credentials' => 'Invalid username or password.'
+    ];
+} else {
+    $T = [
+        'login_title' => 'Acceso',
+        'user' => 'Usuario',
+        'password' => 'Contraseña',
+        'language' => 'Idioma',
+        'login' => 'Entrar',
+        'invalid_credentials' => 'Usuario o contraseña incorrectos.'
+    ];
+}
+
+// Si hay error guardado en sesión, lo mostramos
+$error = '';
+if (isset($_SESSION['login_error'])) {
+    $error = $_SESSION['login_error'];
+    unset($_SESSION['login_error']);
+}
+?>
+<!doctype html>
+<html lang="<?= htmlspecialchars($lengua) ?>">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Inicio</title>
-    <!-- <link rel="stylesheet" href="/estructura_base_mvc/forms/public/css/style.css" /> -->
-    <script src="/estructura_base_mvc/forms/public/js/main.js"></script>
+    <meta charset="utf-8">
+    <title><?= htmlspecialchars($T['login_title']) ?></title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f6f7f8
+        }
+
+        .login {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 360px
+        }
+
+        label {
+            display: block;
+            margin-top: 8px;
+            font-weight: bold
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px
+        }
+
+        button {
+            margin-top: 12px;
+            padding: 8px 12px
+        }
+
+        .error {
+            color: #c00;
+            margin-top: 8px
+        }
+    </style>
 </head>
 
 <body>
-    <header>
-        <h1>Gestor de Proyectos</h1>
-        <button>+ Nuevo Proyecto</button>
-    </header>
+    <div class="login">
+        <h2><?= htmlspecialchars($T['login_title']) ?></h2>
 
-    <main>
-        <h3>Filtrar Proyectos</h3>
-        <form action="/estructura_base_mvc/forms/models/Model.php" method="get">
-            <div class="campo">
-                <label for="nombre">Nombre del Proyecto</label>
-                <input type="text" id="nombre" name="nombre" placeholder="Buscar por nombre...">
-            </div>
+        <?php if ($error): ?>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
 
-            <div class="campo">
-                <label for="tipo">Tipo de Proyecto</label>
-                <select id="tipo" name="tipo">
-                    <option value="">Todos los tipos</option>
-                    <option value="interno">Proyecto interno</option>
-                    <option value="consultoria">Consultoría</option>
-                    <option value="rrhh">Iniciativa RRHH</option>
-                </select>
-            </div>
+        <form action="/estructura_base_mvc/forms/models/Login.php" method="post">
+            <label><?= $T['user'] ?></label>
+            <input type="text" name="usuario" required />
 
-            <div class="campo">
-                <label>Tecnologías</label>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="react" id="react">
-                    <label for="react">React</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="vue" id="vue">
-                    <label for="vue">Vue.js</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="angular" id="angular">
-                    <label for="angular">Angular</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="node" id="node">
-                    <label for="node">Node.js</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="python" id="python">
-                    <label for="python">Python</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="php" id="php">
-                    <label for="php">PHP</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="laravel" id="laravel">
-                    <label for="laravel">Laravel</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="mysql" id="mysql">
-                    <label for="mysql">MySQL</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="bootstrap" id="bootstrap">
-                    <label for="bootstrap">Bootstrap</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="symfony" id="symfony">
-                    <label for="symfony">Symfony</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="mariadb" id="mariadb">
-                    <label for="mariadb">MariaDB</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="tailwind-css" id="tailwind-css">
-                    <label for="tailwind-css">Tailwind CSS</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="postgresql" id="postgresql">
-                    <label for="postgresql">Postgre SQL</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="chartjs" id="chartjs">
-                    <label for="chartjs">Chart.js</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="codeigniter" id="codeigniter">
-                    <label for="codeigniter">CodeIgniter</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="tecnologias[]" value="jquery" id="jquery">
-                    <label for="jquery">jQuery</label>
-                </div>
-            </div>
+            <label><?= $T['password'] ?></label>
+            <input type="password" name="password" required />
 
-            <div class="campo">
-                <label for="estado">Estado</label>
-                <select id="estado" name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="progreso">En progreso</option>
-                    <option value="bloqueado">Bloqueado</option>
-                    <option value="finalizado">Finalizado</option>
-                    <option value="pendiente">Pendiente</option>
-                </select>
-            </div>
+            <label><?= $T['language'] ?></label>
+            <select name="lengua">
+                <option value="es" <?= $lengua === 'es' ? 'selected' : '' ?>>Español</option>
+                <option value="en" <?= $lengua === 'en' ? 'selected' : '' ?>>English</option>
+            </select>
 
-            <div class="acciones">
-                <div>
-                    <input type="submit" value="Aplicar filtros" ="Model.php">
-                    <a href="#">↻ Limpiar filtros</a>
-                </div>
-            </div>
+            <button type="submit"><?= $T['login'] ?></button>
         </form>
-    </main>
+    </div>
 </body>
 
 </html>
