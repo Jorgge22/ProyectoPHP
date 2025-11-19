@@ -1,4 +1,5 @@
 <?php
+// ...existing code...
 // Si el controlador no pasó las listas, las cargamos desde el modelo/BD para evitar warnings
 if (!isset($tecnologias) || !is_array($tecnologias) || !isset($tipos) || !isset($estados)) {
     require_once __DIR__ . '/../models/Proyecto.php';
@@ -46,7 +47,7 @@ $estados = is_array($estados) ? $estados : [];
 <body>
     <h2>➕ Crear Nuevo Proyecto</h2>
 
-    <form action="/estructura_base_mvc/forms/proyectos/crear" method="post">
+    <form action="/estructura_base_mvc/forms/proyectos/guardar" method="post">
 
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required> <br><br>

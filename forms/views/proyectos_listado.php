@@ -1,3 +1,33 @@
+<?php
+// Si el controlador no inyectó $proyectos, cargamos desde el modelo para evitar warnings
+if (!isset($proyectos) || !is_array($proyectos)) {
+    require_once __DIR__ . '/../models/Proyecto.php';
+    $proyectoModel = new Proyecto();
+
+    if (method_exists($proyectoModel, 'obtenerTodos')) {
+        $proyectos = $proyectoModel->obtenerTodos();
+    } else {
+        // fallback directo a DB si el método no existe
+        require_once __DIR__ . '/../lib/Database.php';
+        $db = (new Database())->pdo;
+        $proyectos = $db->query('
+            SELECT p.id, p.nombre, p.descripcion, tp.nombre AS tipo, ep.nombre AS estado,
+                   GROUP_CONCAT(t.nombre SEPARATOR ", ") AS tecnologias
+            FROM proyecto p
+            LEFT JOIN tipoProyecto tp ON p.id_tipoProyecto = tp.id
+            LEFT JOIN estadoProyecto ep ON p.id_estado = ep.id
+            LEFT JOIN proyecto_tecnologia pt ON p.id = pt.id_proyecto
+            LEFT JOIN tecnologia t ON pt.id_tecnologia = t.id
+            GROUP BY p.id
+        ')->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    if (!is_array($proyectos)) {
+        $proyectos = [];
+    }
+}
+?>
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -7,7 +37,7 @@
 </head>
 <body>
     <h1>Proyectos</h1>
-    <a href="/estructura_base_mvc/forms/views/CrearEmpleado.php">Nuevo proyecto</a>
+    <a href="/estructura_base_mvc/forms/views/CrearProyecto.php">Nuevo proyecto</a>
     <table border="1" cellpadding="6" style="margin-top:16px;">
         <thead>
             <tr>

@@ -102,4 +102,45 @@ class Proyecto
         }
         return true;
     }
+
+
+    public function obtenerPorId($id)
+    {
+        require_once __DIR__ . '/../lib/Database.php';
+        $db = (new Database())->pdo;
+
+        $stmt = $db->prepare('
+            SELECT p.id, p.nombre, p.descripcion, p.id_tipoProyecto, p.id_estado,
+                   tp.nombre AS tipo, ep.nombre AS estado
+            FROM proyecto p
+            LEFT JOIN tipoProyecto tp ON p.id_tipoProyecto = tp.id
+            LEFT JOIN estadoProyecto ep ON p.id_estado = ep.id
+            WHERE p.id = ?
+        ');
+        $stmt->execute([$id]);
+        $proyecto = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($proyecto) {
+            $stmt2 = $db->prepare('
+                SELECT t.id, t.nombre
+                FROM tecnologia t
+                JOIN proyecto_tecnologia pt ON t.id = pt.id_tecnologia
+                WHERE pt.id_proyecto = ?
+            ');
+            $stmt2->execute([$id]);
+            $proyecto['tecnologias'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $proyecto ?: null;
+    }
+
+    // obtener ids de tecnologías asociadas a un proyecto
+    public function obtenerTecnologiasPorProyecto($id)
+    {
+        require_once __DIR__ . '/../lib/Database.php';
+        $db = (new Database())->pdo;
+        $stmt = $db->prepare('SELECT id_tecnologia FROM proyecto_tecnologia WHERE id_proyecto = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
 }

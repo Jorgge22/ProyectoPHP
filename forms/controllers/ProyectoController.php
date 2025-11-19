@@ -33,21 +33,51 @@ class ProyectoController
         $tecnologias = $this->proyectoModel->obtenerTecnologias();
 
         // Cargar la vista. Le pasamos los datos para que el usuario pueda seleccionar.
-        require __DIR__ . '/../views/CrearProyecto.php'; 
+        require __DIR__ . '/../views/CrearProyecto.php';
     }
 
     // Crear proyecto 
     public function crear()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre'] ?? '';
-            $descripcion = $_POST['descripcion'] ?? '';
-            $id_tipoProyecto = $_POST['id_tipoProyecto'] ?? 1;
-            $id_estado = $_POST['id_estado'] ?? 1;
-            $tecnologias = $_POST['tecnologias'] ?? [];
-            $this->proyectoModel->crear($nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /estructura_base_mvc/forms/proyectos');
             exit;
+        }
+
+        // obtener datos del formulario
+        $nombre = trim($_POST['nombre'] ?? '');
+        $descripcion = trim($_POST['descripcion'] ?? '');
+        $id_tipoProyecto = (int)($_POST['id_tipoProyecto'] ?? 0);
+        $id_estado = (int)($_POST['id_estado'] ?? 0);
+        $tecnologias = $_POST['tecnologias'] ?? []; // array de ids
+
+        try {
+            // si el modelo proporciona crear(), úsalo
+            if (method_exists($this->proyectoModel, 'crear')) {
+                $this->proyectoModel->crear($nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias);
+            } else {
+                // fallback directo a BD
+                require_once __DIR__ . '/../lib/Database.php';
+                $db = (new Database())->pdo;
+
+                $stmt = $db->prepare('INSERT INTO proyecto (nombre, descripcion, id_tipoProyecto, id_estado) VALUES (?, ?, ?, ?)');
+                $stmt->execute([$nombre, $descripcion, $id_tipoProyecto, $id_estado]);
+                $idProyecto = $db->lastInsertId();
+
+                if (!empty($tecnologias) && is_array($tecnologias)) {
+                    $stmtRel = $db->prepare('INSERT INTO proyecto_tecnologia (id_proyecto, id_tecnologia) VALUES (?, ?)');
+                    foreach ($tecnologias as $idTec) {
+                        $stmtRel->execute([$idProyecto, (int)$idTec]);
+                    }
+                }
+            }
+
+            // redirigir al listado tras crear
+            header('Location: /estructura_base_mvc/forms/proyectos');
+            exit;
+        } catch (\Throwable $e) {
+            error_log('ProyectoController::crear error: ' . $e->getMessage());
+            echo 'Error al crear proyecto.';
         }
     }
 
@@ -75,15 +105,28 @@ class ProyectoController
 
         // 2. Obtener el proyecto específico 
         if ($id) {
-            require_once __DIR__ . '/../lib/Database.php';
-            $db = (new Database())->pdo;
-            $stmt = $db->prepare('SELECT * FROM proyecto WHERE id = ?');
-            $stmt->execute([$id]);
-            $proyecto = $stmt->fetch();
+            // intenta usar un método del modelo si existe
+            if (method_exists($this->proyectoModel, 'obtenerPorId')) {
+                $proyecto = $this->proyectoModel->obtenerPorId($id);
+                $tecnologias_ids = $this->proyectoModel->obtenerTecnologiasPorProyecto($id) ?? [];
+            } else {
+                require_once __DIR__ . '/../lib/Database.php';
+                $db = (new Database())->pdo;
+                $stmt = $db->prepare('SELECT * FROM proyecto WHERE id = ?');
+                $stmt->execute([$id]);
+                $proyecto = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                // obtener ids de tecnologias asociadas
+                $stmt2 = $db->prepare('SELECT id_tecnologia FROM proyecto_tecnologia WHERE id_proyecto = ?');
+                $stmt2->execute([$id]);
+                $tecnologias_ids = $stmt2->fetchAll(PDO::FETCH_COLUMN);
+            }
         }
 
+        // 3. Cargar vista
         require __DIR__ . '/../views/CrearProyecto.php';
     }
+
     public function modificar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
