@@ -1,6 +1,3 @@
-<?php
-// $proyectos debe estar definido por el controlador
-?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -10,7 +7,7 @@
 </head>
 <body>
     <h1>Proyectos</h1>
-    <a href="/estructura_base_mvc/forms/proyectos/crear">Nuevo proyecto</a>
+    <a href="/estructura_base_mvc/forms/views/CrearEmpleado.php">Nuevo proyecto</a>
     <table border="1" cellpadding="6" style="margin-top:16px;">
         <thead>
             <tr>

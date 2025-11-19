@@ -1,15 +1,51 @@
 <?php
 require_once __DIR__ . '/../lib/Database.php';
 
-class Proyecto {
+class Proyecto
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = (new Database())->pdo;
     }
 
+    /**
+     * Obtiene todos los tipos de proyecto
+     * @return array
+     */
+    public function obtenerTipos()
+    {
+        $sql = "SELECT id, nombre FROM tipoProyecto ORDER BY nombre";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Obtiene todos los estados de proyecto
+     * @return array
+     */
+    public function obtenerEstados()
+    {
+        $sql = "SELECT id, nombre FROM estadoProyecto ORDER BY nombre";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Obtiene todas las tecnologías
+     * @return array
+     */
+    public function obtenerTecnologias()
+    {
+        $sql = "SELECT id, nombre FROM tecnologia ORDER BY nombre";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // Obtener todos los proyectos con tipo, estado y tecnologías
-    public function obtenerTodos() {
+    public function obtenerTodos()
+    {
         $sql = "SELECT p.id, p.nombre, p.descripcion, tp.nombre AS tipo, ep.nombre AS estado,
                        GROUP_CONCAT(t.nombre) AS tecnologias
                 FROM proyecto p
@@ -23,29 +59,35 @@ class Proyecto {
     }
 
     // Crear un nuevo proyecto
-    public function crear($nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias = []) {
+    public function crear($nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias = [])
+    {
+        // 1. Inserción del proyecto principal
         $sql = "INSERT INTO proyecto (nombre, descripcion, id_tipoProyecto, id_estado) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$nombre, $descripcion, $id_tipoProyecto, $id_estado]);
-        $id_proyecto = $this->db->lastInsertId();
-        // Insertar tecnologías asociadas
+        $id_proyecto = $this->db->lastInsertId(); // Obtiene el ID del proyecto recién creado
+
+        // 2. Inserción de tecnologías asociadas (si las hay)
         foreach ($tecnologias as $id_tecnologia) {
             $sql2 = "INSERT INTO proyecto_tecnologia (id_proyecto, id_tecnologia) VALUES (?, ?)";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$id_proyecto, $id_tecnologia]);
         }
-        return $id_proyecto;
+
+        return $id_proyecto; // Devuelve el ID del nuevo proyecto
     }
 
     // Borrar un proyecto
-    public function borrar($id) {
+    public function borrar($id)
+    {
         $sql = "DELETE FROM proyecto WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
 
-    // (Opcional) Modificar un proyecto
-    public function modificar($id, $nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias = []) {
+    // Modificar un proyecto
+    public function modificar($id, $nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias = [])
+    {
         $sql = "UPDATE proyecto SET nombre = ?, descripcion = ?, id_tipoProyecto = ?, id_estado = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$nombre, $descripcion, $id_tipoProyecto, $id_estado, $id]);
