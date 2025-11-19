@@ -1,4 +1,9 @@
 <?php
+// index.php (Temporalmente)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require 'lib/Router.php';
 
 // Crear instancia del Router
@@ -23,5 +28,3 @@ $router->add('/estructura_base_mvc/forms/proyectos/modificar', 'ProyectoControll
 
 // Procesar la ruta actual
 $router->dispatch($_SERVER['REQUEST_URI']);
-
-?>

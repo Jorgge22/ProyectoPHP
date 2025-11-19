@@ -46,7 +46,7 @@ class ProyectoController
             $id_estado = $_POST['id_estado'] ?? 1;
             $tecnologias = $_POST['tecnologias'] ?? [];
             $this->proyectoModel->crear($nombre, $descripcion, $id_tipoProyecto, $id_estado, $tecnologias);
-            header('Location: /../views/CrearProyecto.php');
+            header('Location: /estructura_base_mvc/forms/proyectos');
             exit;
         }
     }

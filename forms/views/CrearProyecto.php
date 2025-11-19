@@ -1,3 +1,38 @@
+<?php
+// Si el controlador no pasó las listas, las cargamos desde el modelo/BD para evitar warnings
+if (!isset($tecnologias) || !is_array($tecnologias) || !isset($tipos) || !isset($estados)) {
+    require_once __DIR__ . '/../models/Proyecto.php';
+    $proyectoModel = new Proyecto();
+
+    // Tecnologías
+    if (method_exists($proyectoModel, 'obtenerTecnologias')) {
+        $tecnologias = $proyectoModel->obtenerTecnologias();
+    } else {
+        require_once __DIR__ . '/../lib/Database.php';
+        $db = (new Database())->pdo;
+        $tecnologias = $db->query('SELECT nombre FROM tecnologia')->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    // Tipos
+    if (method_exists($proyectoModel, 'obtenerTipos')) {
+        $tipos = $proyectoModel->obtenerTipos();
+    } else {
+        $tipos = $db->query('SELECT nombre FROM tipoProyecto')->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    // Estados
+    if (method_exists($proyectoModel, 'obtenerEstados')) {
+        $estados = $proyectoModel->obtenerEstados();
+    } else {
+        $estados = $db->query('SELECT nombre FROM estadoProyecto')->fetchAll(PDO::FETCH_COLUMN);
+    }
+}
+
+// Forzar arrays
+$tecnologias = is_array($tecnologias) ? $tecnologias : [];
+$tipos = is_array($tipos) ? $tipos : [];
+$estados = is_array($estados) ? $estados : [];
+?>
 <!DOCTYPE html>
 <html lang="es">
 
