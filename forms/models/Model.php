@@ -3,7 +3,7 @@ session_start();
 
 // Si se solicita cambiar idioma desde el listado (GET), guardamos la cookie
 if (isset($_GET['lengua'])) {
-    setcookie('lengua', $_GET['lengua'], time() + 30*24*3600, '/');
+    setcookie('lengua', $_GET['lengua'], time() + 30 * 24 * 3600, '/');
     // actualizamos $_COOKIE para que la página actual refleje el cambio sin recarga extra
     $_COOKIE['lengua'] = $_GET['lengua'];
 }
@@ -12,7 +12,7 @@ if (isset($_GET['lengua'])) {
 if (!isset($_SESSION['logged']) || !isset($_SESSION['login_time']) || (time() - $_SESSION['login_time'] > 120)) {
     session_unset();
     session_destroy();
-    header('Location: ../views/inicio.php'); 
+    header('Location: ../views/inicio.php');
     exit;
 }
 
@@ -110,6 +110,7 @@ $totalMostrados = count($resultados);
 ?>
 <!doctype html>
 <html lang="<?php echo $lengua ?>">
+
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/estructura_base_mvc/forms/public/css/style.css">
@@ -238,6 +239,12 @@ $totalMostrados = count($resultados);
             <?php echo mostrarProyecto($p, $lengua, $map_tipo, $map_estado, $T) ?>
         <?php endforeach; ?>
     <?php endif; ?>
+
+    <div class="seleccion-accion">
+        <a href="/estructura_base_mvc/forms/proyectos">
+            <button type="button">Crear Nuevo Proyecto</button>
+        </a>
+    </div>
 
 </body>
 

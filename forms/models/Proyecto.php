@@ -104,34 +104,26 @@ class Proyecto
     }
 
 
+    // models/Proyecto.php
+
     public function obtenerPorId($id)
     {
-        require_once __DIR__ . '/../lib/Database.php';
-        $db = (new Database())->pdo;
-
-        $stmt = $db->prepare('
-            SELECT p.id, p.nombre, p.descripcion, p.id_tipoProyecto, p.id_estado,
-                   tp.nombre AS tipo, ep.nombre AS estado
-            FROM proyecto p
-            LEFT JOIN tipoProyecto tp ON p.id_tipoProyecto = tp.id
-            LEFT JOIN estadoProyecto ep ON p.id_estado = ep.id
-            WHERE p.id = ?
-        ');
+        // 1. Datos del proyecto
+        $sql = "SELECT * FROM proyecto WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         $proyecto = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // 2. Tecnologías asociadas (para marcar los checkboxes)
         if ($proyecto) {
-            $stmt2 = $db->prepare('
-                SELECT t.id, t.nombre
-                FROM tecnologia t
-                JOIN proyecto_tecnologia pt ON t.id = pt.id_tecnologia
-                WHERE pt.id_proyecto = ?
-            ');
-            $stmt2->execute([$id]);
-            $proyecto['tecnologias'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            $sqlTec = "SELECT id_tecnologia FROM proyecto_tecnologia WHERE id_proyecto = ?";
+            $stmtTec = $this->db->prepare($sqlTec);
+            $stmtTec->execute([$id]);
+            // Esto crea un array simple tipo [1, 3, 5]
+            $proyecto['tecnologias_ids'] = $stmtTec->fetchAll(PDO::FETCH_COLUMN);
         }
 
-        return $proyecto ?: null;
+        return $proyecto;
     }
 
     // obtener ids de tecnologías asociadas a un proyecto

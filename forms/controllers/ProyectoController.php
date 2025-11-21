@@ -92,38 +92,25 @@ class ProyectoController
     }
 
     // Método Modificar 
+    // controllers/ProyectoController.php
+
     public function modificarForm()
     {
+        // 1. Recoger ID de la URL
         $id = $_GET['id'] ?? null;
-        $proyecto = null;
-        $tecnologias_ids = [];
 
-        // 1. Obtener datos de soporte usando el Modelo
+        // 2. Cargar listas de apoyo
         $tipos = $this->proyectoModel->obtenerTipos();
         $estados = $this->proyectoModel->obtenerEstados();
         $tecnologias = $this->proyectoModel->obtenerTecnologias();
 
-        // 2. Obtener el proyecto específico 
+        // 3. BUSCAR EL PROYECTO Y GUARDARLO EN LA VARIABLE $proyecto
+        $proyecto = null;
         if ($id) {
-            // intenta usar un método del modelo si existe
-            if (method_exists($this->proyectoModel, 'obtenerPorId')) {
-                $proyecto = $this->proyectoModel->obtenerPorId($id);
-                $tecnologias_ids = $this->proyectoModel->obtenerTecnologiasPorProyecto($id) ?? [];
-            } else {
-                require_once __DIR__ . '/../lib/Database.php';
-                $db = (new Database())->pdo;
-                $stmt = $db->prepare('SELECT * FROM proyecto WHERE id = ?');
-                $stmt->execute([$id]);
-                $proyecto = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                // obtener ids de tecnologias asociadas
-                $stmt2 = $db->prepare('SELECT id_tecnologia FROM proyecto_tecnologia WHERE id_proyecto = ?');
-                $stmt2->execute([$id]);
-                $tecnologias_ids = $stmt2->fetchAll(PDO::FETCH_COLUMN);
-            }
+            $proyecto = $this->proyectoModel->obtenerPorId($id);
         }
 
-        // 3. Cargar vista
+        // 4. Cargar la vista (que ahora recibirá $proyecto con datos)
         require __DIR__ . '/../views/CrearProyecto.php';
     }
 
