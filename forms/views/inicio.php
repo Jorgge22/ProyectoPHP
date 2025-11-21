@@ -1,5 +1,17 @@
 <?php
 session_start();
+// Comprobamos si hay idioma en la cookie, si no, usamos español
+// Si se solicita idioma por GET, guardamos la cookie y redirigimos a la misma URL sin query
+if (isset($_GET['lengua'])) {
+    $lang = $_GET['lengua'];
+    setcookie('lengua', $lang, time() + 60*60*24*30, '/estructura_base_mvc/forms');
+    // actualizar variable de _COOKIE para uso inmediato en esta petición
+    $_COOKIE['lengua'] = $lang;
+    // redirigir a la misma ruta sin parámetros
+    $redir = strtok($_SERVER['REQUEST_URI'], '?');
+    header('Location: ' . $redir);
+    exit;
+}
 
 // Comprobamos si hay idioma en la cookie, si no, usamos español
 if (isset($_COOKIE['lengua'])) {
@@ -36,49 +48,13 @@ if (isset($_SESSION['login_error'])) {
     unset($_SESSION['login_error']);
 }
 ?>
+
 <!doctype html>
 <html lang="<?= htmlspecialchars($lengua) ?>">
-
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/estructura_base_mvc/forms/public/css/views/styleLogin.css">
     <title><?= htmlspecialchars($T['login_title']) ?></title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 40px;
-            background: #f6f7f8
-        }
-
-        .login {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 360px
-        }
-
-        label {
-            display: block;
-            margin-top: 8px;
-            font-weight: bold
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 4px
-        }
-
-        button {
-            margin-top: 12px;
-            padding: 8px 12px
-        }
-
-        .error {
-            color: #c00;
-            margin-top: 8px
-        }
-    </style>
 </head>
 
 <body>
@@ -97,7 +73,7 @@ if (isset($_SESSION['login_error'])) {
             <input type="password" name="password" required />
 
             <label><?= $T['language'] ?></label>
-            <select name="lengua">
+            <select name="lengua" onchange="window.location.href = window.location.pathname + '?lengua=' + encodeURIComponent(this.value)">
                 <option value="es" <?= $lengua === 'es' ? 'selected' : '' ?>>Español</option>
                 <option value="en" <?= $lengua === 'en' ? 'selected' : '' ?>>English</option>
             </select>
@@ -106,5 +82,4 @@ if (isset($_SESSION['login_error'])) {
         </form>
     </div>
 </body>
-
 </html>
