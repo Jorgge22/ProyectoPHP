@@ -1,5 +1,4 @@
 <?php
-// ...existing code...
 session_start();
 
 // 1. Manejar borrado directo (si se llamó ?borrar=ID)
@@ -22,12 +21,9 @@ if (isset($_GET['borrar'])) {
             $stmt->execute([$id]);
 
             $db->commit();
-            // ¡El borrado debería funcionar aquí!
 
         } catch (PDOException $e) {
             $db->rollBack();
-            // Opcional: registrar el error o mostrar un mensaje al usuario
-            // echo "Error al intentar borrar: " . $e->getMessage();
         }
     }
     // Redirigir al listado (ruta verificada):
@@ -64,7 +60,6 @@ $estadoFilter = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 // aceptar múltiples tecnologías: name="tecnologia[]" -> $_GET['tecnologia'] es array
 $tecFilter = isset($_GET['tecnologia']) ? (array) $_GET['tecnologia'] : [];
 
-// ** FILTRO TECNOLOGÍAS - CORRECCIÓN VERIFICADA:**
 // Eliminar las cadenas vacías (de la opción 'Todos') para que 'empty' funcione correctamente.
 $tecFilter = array_filter(array_map('trim', $tecFilter));
 
@@ -76,7 +71,7 @@ foreach ($todos as $proyecto) {
     if ($nombreFilter !== '') {
         // stristr o stripos son mejores para búsqueda insensible a mayúsculas
         if (stripos($proyecto['nombre'], $nombreFilter) === false && stripos($proyecto['descripcion'] ?? '', $nombreFilter) === false) {
-            continue; // Se añade búsqueda en descripción para ser más útil
+            continue; 
         }
     }
     // comprobar tipo
@@ -122,8 +117,6 @@ $tipos = $db->query('SELECT nombre FROM tipoProyecto')->fetchAll(PDO::FETCH_COLU
 $estados = $db->query('SELECT nombre FROM estadoProyecto')->fetchAll(PDO::FETCH_COLUMN);
 $tecnologias = $db->query('SELECT nombre FROM tecnologia')->fetchAll(PDO::FETCH_COLUMN);
 
-// ...existing code...
-// Añadir maps para evitar warnings si no existen traducciones/external maps
 $map_tipo = [];
 foreach ($tipos as $t) {
     // mapeo simple: misma etiqueta en ES/EN (fallback)
@@ -135,7 +128,6 @@ foreach ($estados as $e) {
     $map_estado[$e] = ['es' => $e, 'en' => $e];
 }
 
-// ** La función 'mostrarTecnologias' sí existe y se utiliza correctamente **
 function mostrarTecnologias($tecnologias)
 {
     if (is_array($tecnologias)) {
@@ -150,7 +142,6 @@ function mostrarTecnologias($tecnologias)
     return implode(' ', $out);
 }
 
-// ** La función 'mostrarProyecto' ha sido renombrada a 'mostrarProyectos' **
 function mostrarProyectos(array $lista, $lengua, $map_tipo, $map_estado, $T)
 {
     $html = '';
@@ -163,7 +154,6 @@ function mostrarProyectos(array $lista, $lengua, $map_tipo, $map_estado, $T)
         $html .= '<strong>' . htmlspecialchars($proyecto['nombre']) . '</strong>';
         $html .= '<div class="acciones">';
         $html .= '<button type="button" class="btn ghost" onclick="window.location.href=\'/estructura_base_mvc/forms/proyectos/modificar?id=' . urlencode($proyecto['id']) . '\'">Modificar</button> ';
-        // Se asegura que el borrado apunta a la URL del listado con el parámetro 'borrar'
         $html .= '<button type="button" class="btn ghost danger" onclick="if(confirm(\'Borrar proyecto?\')) window.location.href=\'/estructura_base_mvc/forms/proyectos/borrar?id=' . urlencode($proyecto['id']) . '\'">Borrar</button>';
         $html .= '</div></div>';
         $html .= '<small><em>' . htmlspecialchars($tipo) . ' — ' . htmlspecialchars($estado) . '</em></small>';

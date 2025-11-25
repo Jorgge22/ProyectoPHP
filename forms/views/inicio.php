@@ -1,6 +1,5 @@
 <?php
 session_start();
-// Comprobamos si hay idioma en la cookie, si no, usamos español
 // Si se solicita idioma por GET, guardamos la cookie y redirigimos a la misma URL sin query
 if (isset($_GET['lengua'])) {
     $lang = $_GET['lengua'];

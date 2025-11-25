@@ -22,7 +22,7 @@ function traducir($idioma = 'es') {
     ];
 
     $es = [
-        'title' => 'Gestor de Psroyectos',
+        'title' => 'Gestor de Proyectos',
         'login_title' => 'Acceso',
         'user' => 'Usuario',
         'password' => 'Contraseña',

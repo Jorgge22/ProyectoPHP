@@ -92,8 +92,6 @@ class ProyectoController
     }
 
     // Método Modificar 
-    // controllers/ProyectoController.php
-
     public function modificarForm()
     {
         // 1. Recoger ID de la URL
